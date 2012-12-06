@@ -1,0 +1,60 @@
+/* 
+    Document   : bibstyles
+    Created on : 15.11.2012, 13:46:31
+    Author     : Sebastian Böttger
+    Description:
+        Defines CSS for BibSonomy publication lists
+*/
+
+
+
+
+.bibsonomy_publications {
+	
+}
+
+.bibsonomy_publications li {
+	font-size: 14px;
+	line-height: 18px;
+	padding-bottom: 1em;
+}
+
+.bibsonomy_publications div.bibsonomy_entry {
+	font-size: 13px;
+}
+
+.bibsonomy_publications span.title { 
+	display: block;
+	text-decoration: none;
+	font-weight: bold;
+	font-size: 14px !important;
+}
+
+.bibsonomy_publications span.pdf {
+	display: block;
+	font-size: 14px;
+	line-height: 24px;
+	padding: 0 10px 0 22px;
+	margin-top: 5px;
+	background: transparent url(/wp-content/plugins/bibsonomy_csl/img/logo_pdf.png) 0 2px no-repeat; 
+	float: left;
+}
+
+.bibsonomy_publications span.bibtex {
+	display: block;
+	font-size: 14px;
+	line-height: 24px;
+	padding: 0 10px 0 20px;
+	margin-top: 5px;
+	float: left;
+	background: transparent url(/wp-content/plugins/bibsonomy_csl/img/logo_bibsonomy.png) 0 3px no-repeat; 
+}
+/*
+.bibsonomy_publications span.author {
+	color: #216500;
+}
+
+.bibsonomy_publications span.container-title {
+	color: #333;
+}
+*/
