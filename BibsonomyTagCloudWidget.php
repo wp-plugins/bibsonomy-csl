@@ -1,12 +1,12 @@
 <?php
 
 /*
-  Plugin Name: BibSonomy Tag Cloud Widget
+  Plugin Name: BibSonomy CSL (incl. Tag Cloud Widget)
   Plugin URI: http://
   Description: Extension to create publication lists based on the Citation Style Language (CSL). Allows direct integration with the social bookmarking and publication sharing system Bibsonomy http://www.bibsonomy.org or different sources.
   Author: Sebastian Böttger, Andreas Hotho 
   Author URI: http://www.kde.cs.uni-kassel.de
-  Version: 0.1
+  Version: 1.0
  */
 
 function build_sorter($key) {

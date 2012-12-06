@@ -4,12 +4,11 @@ Donate link:
 Tags: bibsonomy, bibliography, publications, bookmark sharing, publication sharing, scientific publications
 Requires at least: 3.0.1
 Tested up to: 3.4.2
-Stable tag: trunk
+Stable tag: 1.0
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Plugin to create publication lists based on the Citation Style Language (CSL). Allows direct integration with the 
-social bookmarking and publication sharing system BibSonomy http://www.bibsonomy.org or different sources. 
+Creates publication lists based on the Citation Style Language (CSL) and Tag Clouds. Allows direct integration with BibSonomy/PUMA. 
 
 == Description ==
 
@@ -32,13 +31,12 @@ To use this plugin, you need your BibSonomy user name and API-Key.
 
 == Installation ==
 
-1. Unzip the `bibsonomy_csl.zip`
-2. Upload the folder `bibsonomy_csl` to the `/wp-content/plugins/` directory
+1. Unzip the `bibsonomy-csl.zip`
+2. Upload the folder `bibsonomy-csl` to the `/wp-content/plugins/` directory
 3. Activate the plugin through the 'Plugins' menu in WordPress
 4. Activate the 'TagCloudWidget' through the 'Plugins' menu in WordPress
 5. Insert your API Settings through General Options on the BibSonomy CSL Options Page (find the latter on your settings-page in BibSonomy)
-6. On 'new article' or 'new page' page now then you find a meta box 'Add BibSonomy Publications'. Here you can enter your settings for selecting
-   the publications to display
+6. On 'new article' or 'new page' page now then you find a meta box 'Add BibSonomy Publications'. Here you can enter your settings for selecting the publications to display
 	6.1 Choose your content type (user/group/viewable) and enter the user id or or the group id
 	6.2 If you want filter your selection with tags (e.g. myown) or free text search
 	6.3 Choose a style from the given list or enter a custom url of another style
@@ -50,7 +48,17 @@ To use this plugin, you need your BibSonomy user name and API-Key.
 
 No questions yet.
 
+== Screenshots ==
+
+1. Rendered publication list from BibSonomy of group 'kde' and filtered by tag 'bibsonomy'
+2. 'Add BibSonomy Publications' MetaBox to integrate a publication list in a post
+3. Decorated tag cloud
+
+
 == Changelog ==
+
+= 1.0 =
+first stable version. Screenshots added and readme.txt changed.
 
 = 0.1 =
 Initial version. Have a lot of fun :)
