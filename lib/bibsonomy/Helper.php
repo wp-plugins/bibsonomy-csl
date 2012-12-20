@@ -84,7 +84,7 @@ class BibsonomyHelper {
 	 */
 	public static function replaceSpecialCharacters($string) {
 		
-		return preg_replace(array("![,./\ ]!", "![^a-zA-Z0-9]!"), "_", $string);  
+		return $string;//preg_replace(array("![,./\ ]!", "![^a-zA-Z0-9]!"), "_", $string);  
 	}
 }
 

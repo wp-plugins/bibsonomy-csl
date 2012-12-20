@@ -85,6 +85,36 @@ $custom_meta_fields = array(
 		'id' => $prefix . 'style_url',
 		'type' => 'text'
 	),
+	
+	"links" => array(
+		'label'   => 'Show URL and BibTeX links',
+		'desc'    => 'If you select this, a hyperlink (if exists) of the publication and hyperlink to BibTeX definition will be shown.',
+		'id'	  => $prefix . 'links',
+		'type'    => 'checkbox',
+		
+	),
+	
+	"groupyear"	=> array(
+		'label'	  => 'Group publications by year',
+		'desc'	  => 'If you select grouping, publications will be grouped by their publishing year. If you select grouping with jump labels, all publishing years of your publication list will be displayed as jump labels at the top of the list. ',
+		'id'	  => $prefix . 'groupyear',
+		'type' => 'select',
+		'options' => array(
+			'one' => array(
+				'label' => 'no grouping',
+				'value' => ''
+			),
+			'two' => array(
+				'label' => 'grouping without jump labels',
+				'value' => 'grouping'
+			),
+			'three' => array(
+				'label' => 'grouping with jump labels ',
+				'value' => 'grouping-anchors'
+			)
+		)
+	),
+	
 	"css" => array(
 		'label' => 'Define layout modifications for your publication list with CSS',
 		'desc' => 'You can define CSS details (Cascading Style Sheets) to manipulate the look and feel of your publication list items.',
@@ -116,9 +146,8 @@ $custom_meta_fields = array(
 	display: block;
 	font-size: 14px;
 	line-height: 24px;
-	padding: 0 10px 0 22px;
+	padding: 0 10px 0 0;
 	margin-top: 5px;
-	background: transparent url(/wp-content/plugins/bibsonomy_csl/img/logo_pdf.png) 0 2px no-repeat; 
 	float: left;
 }
 
@@ -279,7 +308,7 @@ class BibsonomyCsl {
 		wp_nonce_field(plugin_basename(__FILE__), 'bibsonomycsl_nonce');
 
 		$table_name = $wpdb->prefix . "bibsonomy_csl_styles";
-		$results = $wpdb->get_results( "SELECT id, title FROM $table_name ORDER by title ASC;" );
+		$results = $wpdb->get_results( "SELECT id, title FROM $table_name ORDER by id ASC;" );
 
 		foreach($results as $key => $result) {
 
@@ -312,7 +341,8 @@ class BibsonomyCsl {
 					break;
 
 				case 'checkbox':
-					echo '<input type="checkbox" name="' . $field['id'] . '" id="' . $field['id'] . '" ', $meta ? ' checked="checked"' : '', '/>
+					
+					echo '<input type="checkbox" name="' . $field['id'] . '" id="' . $field['id'] . '" '. ($meta ? 'checked="checked"' : '' ) .'/>
 								<label for="' . $field['id'] . '">' . $field['desc'] . '</label>';
 					break;
 
@@ -389,9 +419,9 @@ class BibsonomyCsl {
 		
 		
 		return "<h2>$content</h2>\n"
-				. '<ol class="bibsonomy_publications">'
-				. $bibAPI->renderPublications($args)
-				. "</ol>\n";
+			
+				. $bibAPI->renderPublications($args);
+				
 	}
 	
 	/**
@@ -431,15 +461,17 @@ class BibsonomyCsl {
 		
 		$args['stylesheet'] = get_post_meta($post->ID, 'bibsonomycsl_stylesheet', true);
 		
+		$args['links'] = get_post_meta($post->ID, 'bibsonomycsl_links', true);
 
+		$args['groupyear'] = get_post_meta($post->ID, 'bibsonomycsl_groupyear', true);
+		
 		$args['cssitem'] = get_post_meta($post->ID, 'bibsonomycsl_cssitem', true);
 		
 		$bibAPI = new BibsonomyAPI();
 
 		return "$content\n"
-				. '<ol class="bibsonomy_publications">'
-				. $bibAPI->renderPublications($args)
-				. "</ol>\n";
+				
+				. $bibAPI->renderPublications($args);
 	}
 	
 	public function bibsonomy_add_css() {

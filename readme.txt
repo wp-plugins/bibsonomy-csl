@@ -4,7 +4,7 @@ Donate link:
 Tags: bibsonomy, bibliography, publications, bookmark sharing, publication sharing, scientific publications
 Requires at least: 3.0.1
 Tested up to: 3.4.2
-Stable tag: 1.0
+Stable tag: 1.1
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -26,8 +26,10 @@ In addition you can filter the list, by using tags or free text search. So it's 
 publications by selecting your own BibSonomy user and filtering the list with the tag 'myown'. It's also easily possible to integrate
 your BibSonomy Tag Cloud.
 
-To use this plugin, you need your BibSonomy user name and API-Key.
+To use this plugin, you need your BibSonomy user name and API key.
 
+A comprehensive description about the plugin is available at 
+http://blog.bibsonomy.org/2012/12/feature-of-week-add-publication-lists.html
 
 == Installation ==
 
@@ -56,6 +58,11 @@ No questions yet.
 
 
 == Changelog ==
+
+= 1.1 =
+- Limit the number of tags for TagCloudWidget
+- Grouping by publishing year with or without jump labels 
+- Select with a checkbox if you want to output the URL link and BibTeX link
 
 = 1.0 =
 first stable version. Screenshots added and readme.txt changed.

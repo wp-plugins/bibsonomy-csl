@@ -9,11 +9,6 @@
   Version: 1.0
  */
 
-function build_sorter($key) {
-	return function ($a, $b) use ($key) {
-		return strnatcmp($a->{$key}, $b->{$key});
-	};
-}
 
 require_once 'lib/bibsonomy/BibsonomyAPI.php';
 require_once 'lib/bibsonomy/Url.php';
@@ -70,7 +65,7 @@ class BibsonomyTagCloudWidget extends WP_Widget {
 		</p>
 		
 		<p>
-			<label for="<?php echo $this->get_field_id( 'value' ); ?>">Bibsonomy source type</label>
+			<label for="<?php echo $this->get_field_id( 'value' ); ?>">BibSonomy source type value</label>
 			<input 
 				   id="<?php echo $this->get_field_id( 'value' ); ?>" 
 				   name="<?php echo $this->get_field_name( 'value' ); ?>" 
@@ -79,7 +74,16 @@ class BibsonomyTagCloudWidget extends WP_Widget {
 		</p>
 		
 		<p>
-			<label for="<?php echo $this->get_field_id('layout'); ?>">Tag Cloud layout</label>
+			<label for="<?php echo $this->get_field_id( 'end' ); ?>">Number of tags</label>
+			<input 
+				   id="<?php echo $this->get_field_id( 'end' ); ?>" 
+				   name="<?php echo $this->get_field_name( 'end' ); ?>" 
+				   type="text" 
+				   value="<?php echo (!empty($instance['end'])) ? esc_attr( $instance['end'] ) : 30 ; ?>" />
+		</p>
+		
+		<p>
+			<label for="<?php echo $this->get_field_id('layout'); ?>">BibSonomy Tag Cloud Layout</label>
 			<select 
 				   id="<?php echo $this->get_field_id('layout'); ?>"
 				   name="<?php echo $this->get_field_name('layout')?>">
@@ -107,6 +111,7 @@ class BibsonomyTagCloudWidget extends WP_Widget {
 		$instance['type']	= strip_tags( $new_instance['type']   );
 		$instance['value']  = strip_tags( $new_instance['value']  );
 		$instance['layout'] = strip_tags( $new_instance['layout'] );
+		$instance['end'] = strip_tags( $new_instance['end'] );
 		return $instance;
 	}
 
@@ -124,50 +129,52 @@ class BibsonomyTagCloudWidget extends WP_Widget {
 		$type = $instance['type'];
 		$value = $instance['value'];
 		$layout = $instance['layout'];
+		$end = @$instance['end'];
 		echo $before_widget;
 		if ( ! empty( $type )  &&  ! empty( $value ) ) {
 			echo "<h2>$header</h2>";
 			//echo '<div style="text-align:center">';
-			echo $this->renderTagCloud($type, $value, $layout);
+			echo $this->renderTagCloud($type, $value, $layout, $end);
 			//echo '</div>';
 		}
 		echo $after_widget;
 	}
 	
-	public function renderTagCloud($type, $value, $layout) {
+	public function renderTagCloud($type, $value, $layout, $end) {
 		
 		//print_r($layout);
 		
 		switch($layout) {
 			
 			case 'decorated':
-				return $this->decoratedTagCloud($type, $value);
+				return $this->decoratedTagCloud($type, $value, $end);
 			
 			case 'button':
-				return $this->buttonstyleTagCloud($type, $value);
+				return $this->buttonstyleTagCloud($type, $value, $end);
 			
 			case 'simple':
 			default:
-				return $this->simpleTagCloud($type, $value);
+				return $this->simpleTagCloud($type, $value, $end);
 			
 		}
 	}
 		
 	
-	public function fetchTags($type, $value) {
+	public function fetchTags($type, $value, $end = 30) {
 		global $BIBSONOMY_OPTIONS;
 		$options = $BIBSONOMY_OPTIONS;
 		$url  = "http://".$options['user'].":".$options['apikey']."@";
-		$url .= $options['bibsonomyhost']."/api/tags?$type=$value&format=json&order=frequency&end=40";
+		$url .= $options['bibsonomyhost']."/api/tags?$type=$value&format=json&order=frequency&end=$end";
+		
 		$bibApiUrl = new BibsonomyCsl_Url($url);
 		$request = new CurlHttpRequest($bibApiUrl);
 		return json_decode($request->send()->getBody()); 
 	}
 	
 	
-	public function buttonstyleTagCloud($type, $value) {
+	public function buttonstyleTagCloud($type, $value, $end) {
 		global $BIBSONOMY_OPTIONS;
-		$json = $this->fetchTags($type, $value);
+		$json = $this->fetchTags($type, $value, $end);
 		
 		$maxcount = $json->tags->tag[0]->usercount;
 		$out = array();
@@ -218,9 +225,9 @@ class BibsonomyTagCloudWidget extends WP_Widget {
 	 * @param string $value 
 	 * @return string rendered TagCloud
 	 */
-	public function simpleTagCloud($type, $value) {
+	public function simpleTagCloud($type, $value, $end) {
 		global $BIBSONOMY_OPTIONS;
-		$json = $this->fetchTags($type, $value);
+		$json = $this->fetchTags($type, $value, $end);
 		
 		$maxcount = $json->tags->tag[0]->usercount;
 		$out = array();
@@ -247,9 +254,9 @@ class BibsonomyTagCloudWidget extends WP_Widget {
 		
 	}
 	
-	public function decoratedTagCloud($type, $value) {
+	public function decoratedTagCloud($type, $value, $end) {
 		global $BIBSONOMY_OPTIONS;
-		$json = $this->fetchTags($type, $value);
+		$json = $this->fetchTags($type, $value, $end);
 		
 		//$maxcount = $json->tags->tag[0]->usercount;
 		$out = array();

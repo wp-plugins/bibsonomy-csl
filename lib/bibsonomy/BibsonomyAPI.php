@@ -25,6 +25,7 @@
 require_once 'Url.php';
 require_once 'CurlHttpResponse.php';
 require_once 'CurlHttpRequest.php';
+require_once 'Helper.php';
 
 /**
  * Description of BibsonomyAPI
@@ -80,7 +81,9 @@ class BibsonomyAPI {
 		try {
 
 			$publications = $this->fetchPublications($args);
-
+			
+			usort($publications, "self::cmpYear");
+			
 			if (is_array($publications) && count($publications) > 0) {
 				if ($args['style'] == '') {
 					$query = "SELECT xml_source FROM $table_name WHERE id='" . $args['stylesheet'] . "';";
@@ -104,30 +107,67 @@ class BibsonomyAPI {
 		$citeProc = new citeproc($xmlSource);
 
 		$ret = "";
-
+		$year = 0;
+				
+		if($args["groupyear"] == "grouping-anchors") {
+			$ret .= $this->renderGroupingAnchors($publications);
+		}
+		
+		$ret .= '<ul class="bibsonomy_publications">';
+		
 		foreach ($publications as $key => $publication) {
 			global $BIBSONOMY_OPTIONS;
 
-			$ret .= '<li class="bibsonomy_pubitem"';
-			$ret .= ((isset($args['cssitem']) && $args['cssitem'] != "") ? 'style="' . $args['cssitem'] . '"' : "") . '>';
+			if($args["groupyear"] == "grouping" || $args["groupyear"] == "grouping-anchors") {
+				if($year != $publication->issued->literal) {
+					$year = $publication->issued->literal;
+					$ret .= "\n</ul>";
+					$ret .= "\n<a id=\"jmp_".BibsonomyHelper::replaceSpecialCharacters($year)."\"></a><h3 style=\"font-size: 1.1em; font-weight: bold;\">$year</h3>";
+					$ret .= "\n<ul class=\"bibsonomy_publications\">";
+				}
+			}	
+			$ret .= '<li class="bibsonomy_pubitem">';
+			//$ret .= ((isset($args['cssitem']) && $args['cssitem'] != "") ? 'style="' . $args['cssitem'] . '"' : "") . '>';
 			$ret .= '<div class="bibsonomy_entry">';
 
+			
 			$ret .= $citeProc->render($publication);
 			
-			if (!empty($publication->URL)) {
-				$ret .= '<span class="pdf"><a href="' . $publication->URL . '" target="_blank">PDF</a></span> ';
+			if($args['links']) {
+
+				if (!empty($publication->URL)) {
+					$ret .= '<span class="pdf"><a href="' . $publication->URL . '" target="_blank">URL</a></span> ';
+				}
+
+				$ret .= '<span class="bibtex"><a href="http://'.$BIBSONOMY_OPTIONS['bibsonomyhost'].'/bib/bibtex/2' . substr($publication->id, 0, 32) . '?bibtex.entriesPerPage=1' . '" target="_blank">BibTeX</a></span>';
+
+				$ret .= '<div style="clear: left"> </div>';
 			}
-
-			$ret .= '<span class="bibtex"><a href="http://'.$BIBSONOMY_OPTIONS['bibsonomyhost'].'/bib/bibtex/2' . substr($publication->id, 0, 32) . '?bibtex.entriesPerPage=1' . '" target="_blank">BibTeX</a></span>';
-
-			$ret .= '<div style="clear: left"> </div>';
 			$ret .= '</div>';
 			$ret .= '</li>';
 		}
+		
+		$ret .= '</ul>';
 
 		return $ret;
 	}
 
+	public function renderGroupingAnchors($publications) {
+		
+		$array = array();
+		foreach($publications as $pub) {
+			$year = $pub->issued->literal;
+			
+			if(array_key_exists($year, $array) ) {
+				continue;
+			}
+			
+			$array[$year] = '[<a href="#jmp_'.BibsonomyHelper::replaceSpecialCharacters($year).'" title="Goto '.$year.'">'.$year.'</a>]';
+		}
+		
+		return implode(" ", array_values($array));
+	}
+	
 	private function fetchPublications($args) {
 
 		$biburl = new BibsonomyCsl_Url($this->buildAPIUrl($args));
@@ -166,6 +206,9 @@ class BibsonomyAPI {
 		return $response->getBody();
 	}
 
+	public static function cmpYear($a, $b) {
+		return ($a->issued->literal < $b->issued->literal) ? 1 : 0;
+	}
 }
 
 ?>
