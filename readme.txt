@@ -4,7 +4,7 @@ Donate link:
 Tags: bibsonomy, bibliography, publications, bookmark sharing, publication sharing, scientific publications
 Requires at least: 3.0.1
 Tested up to: 3.4.2
-Stable tag: 1.1
+Stable tag: 1.1.0
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -59,7 +59,7 @@ No questions yet.
 
 == Changelog ==
 
-= 1.1 =
+= 1.1.0 =
 - Limiting the number of tags for TagCloudWidget
 - Grouping by publishing year with or without jump labels 
 - Select with a checkbox if you want to output the URL link and BibTeX link
