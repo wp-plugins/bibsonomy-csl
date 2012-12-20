@@ -13,7 +13,7 @@ Creates publication lists based on the Citation Style Language (CSL) and Tag Clo
 == Description ==
 
 Plugin to create publication lists based on the Citation Style Language (CSL). Allows direct integration with the 
-social bookmarking and publication sharing system BibSonomy http://www.bibsonomy.org or different sources. 
+social bookmarking and publication sharing system BibSonomy http://www.bibsonomy.org or PUMA. 
 
 BibSonomy is a social bookmarking and publication-sharing system. It integrates the features of bookmarking 
 systems with team-oriented publication management. BibSonomy offers its users the ability to store and organize 
@@ -60,7 +60,7 @@ No questions yet.
 == Changelog ==
 
 = 1.1 =
-- Limit the number of tags for TagCloudWidget
+- Limiting the number of tags for TagCloudWidget
 - Grouping by publishing year with or without jump labels 
 - Select with a checkbox if you want to output the URL link and BibTeX link
 
