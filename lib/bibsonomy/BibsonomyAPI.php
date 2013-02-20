@@ -25,7 +25,7 @@
 require_once 'Url.php';
 require_once 'CurlHttpResponse.php';
 require_once 'CurlHttpRequest.php';
-require_once 'Helper.php';
+require_once 'BibsonomyHelper.php';
 
 /**
  * Description of BibsonomyAPI
