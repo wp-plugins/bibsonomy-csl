@@ -59,6 +59,9 @@ No questions yet.
 
 == Changelog ==
 
+= 1.1.1 =
+- Bug fix for error "Fatal error: Cannot redeclare class BibsonomyHelper in /var/www/wp-content/plugins/bibsonomy-csl/BibsonomyHelper.php on line 31" while installing the Plugin.
+
 = 1.1.0 =
 - Limiting the number of tags for TagCloudWidget
 - Grouping by publishing year with or without jump labels 
