@@ -3,8 +3,8 @@ Contributors: seboettg
 Donate link: 
 Tags: bibsonomy, bibliography, publications, bookmark sharing, publication sharing, scientific publications
 Requires at least: 3.0.1
-Tested up to: 3.4.2
-Stable tag: 1.1.3
+Tested up to: 3.5.1
+Stable tag: 1.1.4
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,7 +14,7 @@ Creates publication lists based on the Citation Style Language (CSL) and Tag Clo
 
 Plugin to create publication lists based on the Citation Style Language (CSL). Allows direct integration with the 
 social bookmarking and publication sharing system BibSonomy http://www.bibsonomy.org or PUMA. 
-
+ 
 BibSonomy is a social bookmarking and publication-sharing system. It integrates the features of bookmarking 
 systems with team-oriented publication management. BibSonomy offers its users the ability to store and organize 
 their bookmarks and publications online and it supports the integration of scientific communities through user groups as well as the collection, management, exchange, export and display of literature lists.

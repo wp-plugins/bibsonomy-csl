@@ -6,7 +6,7 @@
   Description: Plugin to create publication lists based on the Citation Style Language (CSL). Allows direct integration with the social bookmarking and publication sharing system Bibsonomy http://www.bibsonomy.org or different sources.
   Author: Sebastian Böttger, Andreas Hotho
   Author URI: http://www.kde.cs.uni-kassel.de
-  Version: 1.1.3
+  Version: 1.1.4
  */
 
 if (is_admin()) {
