@@ -1,27 +1,20 @@
 <?php
+/*
+    This file is part of BibSonomy/PUMA CSL for WordPress.
 
-/***************************************************************
- *  Copyright notice
- *
- *  (c) 2012 
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- * ************************************************************* */
+    BibSonomy/PUMA CSL for WordPress is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    BibSonomy/PUMA CSL for WordPress is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with BibSonomy/PUMA CSL for WordPress.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 /**
  * Description of BibsonomyOptions
@@ -65,7 +58,7 @@ class BibsonomyOptions {
 		//adds user id field
 		add_settings_field(
 			'bibsonomy_text_user',
-			'Enter your BibSonomy user ID here',
+			'Enter your BibSonomy/PUMA user ID here',
 			array(&$this, 'bibsonomy_setting_user' ),
 			'bibsonomy',
 			'bibsonomy_main'
