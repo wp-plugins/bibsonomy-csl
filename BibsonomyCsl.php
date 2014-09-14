@@ -1,12 +1,30 @@
 <?php
 
 /*
-  Plugin Name: BibSonomy CSL
+  Plugin Name: BibSonomy/PUMA CSL - Publications
   Plugin URI: http://www.bibsonomy.org/help_en/Wordpress%20Plugin%20bibsonomy_csl
-  Description: Plugin to create publication lists based on the Citation Style Language (CSL). Allows direct integration with the social bookmarking and publication sharing system Bibsonomy http://www.bibsonomy.org or different sources.
+  Description: Plugin to create publication lists based on the Citation Style Language (CSL). Allows direct integration with the social bookmarking and publication sharing systems BibSonomy http://www.bibsonomy.org or PUMA.
   Author: Sebastian Böttger, Andreas Hotho
-  Author URI: http://www.kde.cs.uni-kassel.de
-  Version: 1.1.4
+  Author URI: http://www.academic-puma.de
+  Version: 2.0.0
+ */
+
+
+/*
+    This file is part of BibSonomy/PUMA CSL for WordPress.
+
+    BibSonomy/PUMA CSL for WordPress is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    BibSonomy/PUMA CSL for WordPress is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with BibSonomy/PUMA CSL for WordPress.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 if (is_admin()) {
@@ -16,15 +34,17 @@ if (is_admin()) {
 
 
 require_once 'lib/bibsonomy/BibsonomyAPI.php';
+require_once 'lib/bibsonomy/DocumentUrl.php';
+require_once 'lib/bibsonomy/CurlHttpRequestProxy.php';
 require_once 'lib/citeproc-php/CiteProc.php';
 require_once 'BibsonomyOptions.php';
 
-$prefix = 'bibsonomycsl_';
+
 $custom_meta_fields = array(
     "type" => array(
         'label' => 'Select BibSonomy content source type',
         'desc' => 'You can choose between user, group and viewable. For a detailed explanation, refer to <a target="_blank" href="http://www.bibsonomy.org/help_en/URL%20Scheme%20Semantics">http://www.bibsonomy.org/help_en/URL%20Scheme%20Semantics</a>.',
-        'id' => $prefix . 'type',
+        'id' => BibsonomyCsl::PREFIX. 'type',
         'type' => 'select',
         'options' => array(
             'one' => array(
@@ -48,51 +68,69 @@ $custom_meta_fields = array(
     "type_value" => array(
         'label' => 'Specify the value of the content source type',
         'desc' => 'Here you can specify the value of the content source type. As an example, insert an user id when filtering by user or a group id for filtering by group.',
-        'id' => $prefix . 'type_value',
+        'id' => BibsonomyCsl::PREFIX. 'type_value',
         'type' => 'text'
     ),
     "tags" => array(
         'label' => 'Filter the publication list by choosing one or more tags.',
         'desc' => 'Filter the results by choosing one or more tags. As an example, if you type in the tag "myown", the result is limited to publications which are annotated with this tag. If you want to select more than one tag you have to separate them by a space character.',
-        'id' => $prefix . 'tags',
+        'id' => BibsonomyCsl::PREFIX. 'tags',
         'type' => 'text'
     ),
     "search" => array(
         'label' => 'Filter the result list by using free fulltext search',
         'desc' => 'You can also filter the result list by using free fulltext search. The search syntax is explained here in greater detail: <a href="http://www.bibsonomy.org/help_en/Search%2Bpages" target="_blank">http://www.bibsonomy.org/help_en/Search%2Bpages</a>.',
-        'id' => $prefix . 'search',
+        'id' => BibsonomyCsl::PREFIX. 'search',
         'type' => 'text'
     ),
     "end" => array(
         'label' => 'Limit the length of the result list',
         'desc' => '',
-        'id' => $prefix . 'end',
+        'id' => BibsonomyCsl::PREFIX. 'end',
         'type' => 'text',
         'default' => 100
     ),
     "stylesheet" => array(
         'label' => 'CSL-Stylesheet',
         'desc' => 'Choose a stylesheet.',
-        'id' => $prefix . 'stylesheet',
+        'id' => BibsonomyCsl::PREFIX. 'stylesheet',
         'options' => array(),
         'type' => 'select'
     ),
     "style_url" => array(
         'label' => 'URL to CSL-Stylesheet',
         'desc' => 'Alternativly insert an URL of a stylesheet. A huge set of styles can you find at <a href="http://zotero.org/styles/" target="_blank">zotero.org/styles/</a>.',
-        'id' => $prefix . 'style_url',
+        'id' => BibsonomyCsl::PREFIX. 'style_url',
         'type' => 'text'
     ),
+    "abstract" => array(
+        'label' => 'Show link to abstract',
+        'desc' => 'If you select this, a hyperlink to the abstract of the publication (if exists) will be shown.',
+        'id' => BibsonomyCsl::PREFIX. 'abstract',
+        'type' => 'checkbox'
+    ),
     "links" => array(
-        'label' => 'Show URL and BibTeX links',
-        'desc' => 'If you select this, a hyperlink (if exists) of the publication and hyperlink to BibTeX definition will be shown.',
-        'id' => $prefix . 'links',
-        'type' => 'checkbox',
+        'label' => 'Show URL, BibTeX and EndNote links',
+        'desc' => 'If you select this, a hyperlink (if exists) of the publication and two hyperlinsk to show BibTeX and EndNote exports will be shown.',
+        'id' => BibsonomyCsl::PREFIX. 'links',
+        'type' => 'checkbox'
+    ),
+    "download" => array(
+        'label' => 'Show download links',
+        'desc' => 'If you select this, for each post a hyperlink to the associated document (if exists) will be shown.',
+        'id' => BibsonomyCsl::PREFIX. 'download',
+        'type' => 'checkbox'
+    ),
+    "preview" => array(
+        'label' => 'Show thumbnails of documents',
+        'desc' => 'If you select this, for each post a preview image of the associated document (if exists) will be shown.',
+        'id' => BibsonomyCsl::PREFIX. 'preview',
+        'type' => 'checkbox'
     ),
     "groupyear" => array(
         'label' => 'Group publications by year',
         'desc' => 'If you select grouping, publications will be grouped by their publishing year. If you select grouping with jump labels, all publishing years of your publication list will be displayed as jump labels at the top of the list. ',
-        'id' => $prefix . 'groupyear',
+        'id' => BibsonomyCsl::PREFIX. 'groupyear',
         'type' => 'select',
         'options' => array(
             'one' => array(
@@ -112,49 +150,45 @@ $custom_meta_fields = array(
     "css" => array(
         'label' => 'Define layout modifications for your publication list with CSS',
         'desc' => 'You can define CSS details (Cascading Style Sheets) to manipulate the look and feel of your publication list items.',
-        'id' => $prefix . 'css',
+        'id' => BibsonomyCsl::PREFIX. 'css',
         'type' => 'textarea',
         'default' => "
-.bibsonomy_publications {
-	
+/* Use this field to overwrite the style of the publication list */
+
+ul.bibsonomycsl_publications {
+
 }
 
-.bibsonomy_publications li {
-	font-size: 14px;
-	line-height: 18px;
-	padding-bottom: 1em;
+ul.bibsonomycsl_publications li {
+
 }
 
-.bibsonomy_publications div.bibsonomy_entry {
-	font-size: 13px;
+ul.bibsonomycsl_publications div.bibsonomycsl_entry {
+
 }
 
-.bibsonomy_publications span.title { 
-	display: block;
-	text-decoration: none;
-	font-weight: bold;
-	font-size: 14px !important;
+.bibsonomycsl_publications span.title { 
+
 }
 
-.bibsonomy_publications span.pdf {
-	display: block;
-	font-size: 14px;
-	line-height: 24px;
-	padding: 0 10px 0 0;
-	margin-top: 5px;
-	float: left;
+.bibsonomycsl_publications span.pdf {
+
 }
 
-.bibsonomy_publications span.bibtex {
-	display: block;
-	font-size: 14px;
-	line-height: 24px;
-	padding: 0 10px 0 20px;
-	margin-top: 5px;
-	float: left;
-	background: transparent url(/wp-content/plugins/bibsonomy_csl/img/logo_bibsonomy.png) 0 3px no-repeat; 
+.bibsonomycsl_publications span.bibtex {
+
 }
+
+img.bibsonomycsl_preview {
+
+}
+
+.bibsonomycsl_preview_border {
+
+}
+
 "
+
     )
 );
 
@@ -162,6 +196,8 @@ $BIBSONOMY_OPTIONS = get_option('bibsonomy_options');
 
 class BibsonomyCsl {
 
+    const PREFIX = 'bibsonomycsl_';
+    
     /**
      * 
      * @var BibsonomyOptions 
@@ -174,11 +210,17 @@ class BibsonomyCsl {
     public function __construct() {
         register_activation_hook(__FILE__, array(&$this, 'jal_install'));
         register_activation_hook(__FILE__, array(&$this, 'jal_install_data'));
-        register_activation_hook(__FILE__, array(&$this, 'activate'));
 
-        register_deactivation_hook(__FILE__, array(&$this, 'jal_uninstall'));
-        register_deactivation_hook(__FILE__, array(&$this, 'deactivate'));
         $this->bibsonomyOptions = new BibsonomyOptions();
+
+        //activation
+        register_activation_hook(__FILE__, array(&$this, 'activate'));
+        
+        //deactivation
+        register_deactivation_hook(__FILE__, array(&$this, 'deactivate'));
+        
+        //uninstallation
+        register_uninstall_hook(__FILE__, array(&$this, 'jal_uninstall'));
     }
 
     /**
@@ -187,14 +229,22 @@ class BibsonomyCsl {
     public function activate() {
 
         add_shortcode('bibsonomy', array(&$this, 'bibsonomycsl_shortcode_publications'));
+        
+        add_filter('template_redirect', array(&$this, 'bibsonomycsl_action'), 1);
+
         add_filter('the_content', array(&$this, 'bibsonomycsl_insert_publications_from_post_meta'));
         add_action('add_meta_boxes', array(&$this, 'bibsonomycsl_custom_fields'));
         add_action('save_post', array(&$this, 'bibsonomy_save_custom_meta'));
-        add_action('wp_head', array(&$this, 'bibsonomy_add_css'));
+        
         //register options/settings page
         add_action('admin_menu', array(&$this->bibsonomyOptions, 'bibsonomy_add_settings_page'));
 
-        //add_action( 'wp_print_styles', array(&$this, 'bibsonomycsl_enquere_styles') );
+        //enqueue css and javascript
+        add_action( 'wp_enqueue_scripts', array(&$this, 'bibsonomycsl_enqueue_scripts') );
+        
+        //custom css
+        add_action('wp_head', array(&$this, 'bibsonomy_add_css'));
+        
     }
 
     /**
@@ -204,10 +254,12 @@ class BibsonomyCsl {
 
         remove_shortcode('bibsonomy', array(&$this, 'bibsonomycsl_shortcode_publications'));
         remove_filter('the_content', array(&$this, 'bibsonomycsl_insert_publications_from_post_meta'));
+        remove_filter('template_redirect', array(&$this, 'bibsonomycsl_download_document'));
         remove_action('add_meta_boxes', array(&$this, 'bibsonomycsl_custom_fields'));
         remove_action('save_post', array(&$this, 'bibsonomycsl_custom_fields_data'));
-        remove_action('wp_print_styles', array(&$this, 'bibsonomycsl_enquere_styles'));
+        remove_action('wp_print_styles', array(&$this, 'bibsonomycsl_enqueue_styles'));
         remove_action('wp_head', array(&$this, 'bibsonomy_add_css'));
+        remove_action('wp_head', array(&$this, 'bibsonomy_add_js'));
     }
 
     public function jal_install() {
@@ -232,6 +284,28 @@ class BibsonomyCsl {
     public function jal_uninstall() {
         global $wpdb, $jal_db_version;
 
+        // Make sure that we are uninstalling
+        if ( !defined( 'WP_UNINSTALL_PLUGIN' ) ) {
+            exit();
+        }
+        
+        $option_name = 'bibsonomy_options';
+
+        if ( !is_multisite() )  {
+            delete_option( $option_name );
+        } else {
+            
+            $blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
+            $original_blog_id = get_current_blog_id();
+
+            foreach ( $blog_ids as $blog_id ) {
+                switch_to_blog( $blog_id );
+                delete_option( $option_name );     
+            }
+
+            switch_to_blog( $original_blog_id );
+        } 
+        
         $table_name = $wpdb->prefix . "bibsonomy_csl_styles";
         $wpdb->query("DROP TABLE {$table_name}");
     }
@@ -296,9 +370,13 @@ class BibsonomyCsl {
         global $custom_meta_fields, $post, $wpdb;
         wp_nonce_field(plugin_basename(__FILE__), 'bibsonomycsl_nonce');
 
+        
+        $custom_meta_fields["stylesheet"]["options"]["url"]["label"] = "Use stylesheet from URL";
+        $custom_meta_fields["stylesheet"]["options"]["url"]["value"] = "url";
+        
         $table_name = $wpdb->prefix . "bibsonomy_csl_styles";
         $results = $wpdb->get_results("SELECT id, title FROM $table_name ORDER by id ASC;");
-
+        
         foreach ($results as $key => $result) {
 
             $custom_meta_fields["stylesheet"]["options"][$key]["label"] = $result->title;
@@ -315,8 +393,8 @@ class BibsonomyCsl {
             $meta = get_post_meta($post->ID, $field['id'], true);
             // begin a table row with
             echo '<tr>
-					<th><label for="' . $field['id'] . '">' . $field['label'] . '</label></th>
-					<td>';
+                    <th><label for="' . $field['id'] . '">' . $field['label'] . '</label></th>
+                    <td>';
             switch ($field['type']) {
 
                 case 'text':
@@ -435,43 +513,163 @@ class BibsonomyCsl {
             return $content;
         }
 
-        $args['val'] = get_post_meta($post->ID, 'bibsonomycsl_type_value', true);
-
-        $args['tags'] = get_post_meta($post->ID, 'bibsonomycsl_tags', true);
-        $args['search'] = get_post_meta($post->ID, 'bibsonomycsl_search', true);
-
-        $args['end'] = get_post_meta($post->ID, 'bibsonomycsl_end', true);
-
-        $args['style'] = get_post_meta($post->ID, 'bibsonomy_style_url', true);
-
-
-        $args['stylesheet'] = get_post_meta($post->ID, 'bibsonomycsl_stylesheet', true);
-
-        $args['links'] = get_post_meta($post->ID, 'bibsonomycsl_links', true);
-
-        $args['groupyear'] = get_post_meta($post->ID, 'bibsonomycsl_groupyear', true);
-
-        $args['cssitem'] = get_post_meta($post->ID, 'bibsonomycsl_cssitem', true);
+        $args['val'] = get_post_meta($post->ID, BibsonomyCsl::PREFIX.'type_value', true);
+        $args['tags'] = get_post_meta($post->ID, BibsonomyCsl::PREFIX.'tags', true);
+        $args['search'] = get_post_meta($post->ID, BibsonomyCsl::PREFIX.'search', true);
+        $args['end'] = get_post_meta($post->ID, BibsonomyCsl::PREFIX.'end', true);
+        $args['abstract'] = get_post_meta($post->ID, BibsonomyCsl::PREFIX.'abstract', true);
+        $args['download'] = get_post_meta($post->ID, BibsonomyCsl::PREFIX.'download', true);
+        $args['preview'] = get_post_meta($post->ID, BibsonomyCsl::PREFIX.'preview', true);
+        $args['style'] = get_post_meta($post->ID, BibsonomyCsl::PREFIX.'style_url', true);
+        $args['stylesheet'] = get_post_meta($post->ID, BibsonomyCsl::PREFIX.'stylesheet', true);
+        $args['links'] = get_post_meta($post->ID, BibsonomyCsl::PREFIX.'links', true);
+        $args['groupyear'] = get_post_meta($post->ID, BibsonomyCsl::PREFIX.'groupyear', true);
+        $args['cssitem'] = get_post_meta($post->ID, BibsonomyCsl::PREFIX.'cssitem', true);
 
         $bibAPI = new BibsonomyAPI();
-
-        return "$content\n"
+        
+        $ttimg = '<div id="trailimageid"><img id="ttimg" src="'.plugins_url('',__FILE__).'/img/loading.gif"></div>';
+        
+        return "$ttimg $content\n"
                 . $bibAPI->renderPublications($args);
     }
 
+    public function bibsonomycsl_action() {
+        $action = filter_input(INPUT_GET, 'action', FILTER_SANITIZE_STRING);
+
+        if (!empty($action)) {
+
+            $intraHash = filter_input(INPUT_GET, 'intraHash', FILTER_SANITIZE_STRING);
+            $userName = filter_input(INPUT_GET, 'userName', FILTER_SANITIZE_STRING);
+            $fileName = filter_input(INPUT_GET, 'fileName', FILTER_SANITIZE_STRING);
+
+            switch ($action) {
+
+                case 'download':
+                    $this->bibsonomycsl_download_document($userName, $intraHash, $fileName);
+                    break;
+
+                case 'preview':
+                    $this->bibsonomycsl_preview_document($userName, $intraHash, $fileName);
+                    break;
+                
+                case 'bibtex':
+                    $this->bibsonomycsl_bibtex_export($userName, $intraHash);
+                    break;
+                
+                case 'endnote':
+                    $this->bibsonomycsl_endnote_export($userName, $intraHash);
+                    break;
+            }
+        }
+        return;
+    }
+
+    public function bibsonomycsl_download_document($userName, $intraHash, $fileName) {
+
+        $settings = $this->bibsonomycsl_get_settings();
+
+        $url = new DocumentUrl($settings, $userName, $intraHash, $fileName, false);
+
+        $proxy = new CurlHttpRequestProxy($url);
+
+        $proxy->send();
+
+        exit();
+    }
+
+    public function bibsonomycsl_preview_document($userName, $intraHash, $fileName) {
+
+        $size = filter_input(INPUT_GET, 'size', FILTER_SANITIZE_STRING);
+
+        $settings = $this->bibsonomycsl_get_settings();
+
+        $url = new DocumentUrl($settings, $userName, $intraHash, $fileName, $size);
+
+        $proxy = new CurlHttpRequestProxy($url);
+
+        $proxy->send();
+
+        exit();
+    }
+
+    public function bibsonomycsl_bibtex_export($userName, $intraHash) {
+        
+        $url = new BibsonomyCsl_Url($this->buildExportUrl($userName, $intraHash, 'bibtex'));
+        $this->bibsonomycsl_print_export($url);
+    }
+    
+    public function bibsonomycsl_endnote_export($userName, $intraHash) {
+        
+        $url = new BibsonomyCsl_Url($this->buildExportUrl($userName, $intraHash, 'endnote'));
+        $this->bibsonomycsl_print_export($url);
+    }
+    
+    private function bibsonomycsl_print_export(BibsonomyCsl_Url $url) {
+        
+        $request = new CurlHttpRequest($url);
+
+        //gets response object
+        $response = $request->send();
+        if ($response === false) {
+            throw new Exception(
+                "HTTP Error. Maybe this happens because the server connection is blocked by a firewall.\n"
+                . "Please contact your webmaster!", 14
+                );
+        }
+        //returns body message of response
+        print '<textarea rows="10">'.$response->getBody().'</textarea>';
+        exit();
+    }
+    
+    private function buildExportUrl($userName, $intraHash, $format) {
+        
+        $settings = $this->bibsonomycsl_get_settings();
+        
+        $components = parse_url($settings['bib_server']);
+        
+        //set user/pass for authentication
+        $components['user'] = $settings['bib_login_name'];
+        $components['pass'] = $settings['bib_api_key'];
+
+        //set path to api
+        $components['path'] = '/api/users/'.urldecode($userName).'/posts/'.$intraHash;
+        
+        $qry = array();
+        $qry['format'] = $format;
+        $qry['resourcetype'] = 'bibtex';
+        
+        $components['query'] = http_build_query($qry);
+        
+        return BibsonomyCsl_Url::http_build_url($components);
+    }
+    
+    
+    private function bibsonomycsl_get_settings() {
+        global $BIBSONOMY_OPTIONS;
+
+        $settings['bib_login_name'] = $BIBSONOMY_OPTIONS['user'];
+        $settings['bib_api_key'] = $BIBSONOMY_OPTIONS['apikey'];
+        $settings['bib_server'] = 'http://' . $BIBSONOMY_OPTIONS['bibsonomyhost'];
+
+        return $settings;
+    }
+    
     public function bibsonomy_add_css() {
         global $post;
 
-
-        echo '<style type="text/css">' . "\n" .
+        
+        echo '<style type="text/css" rel="stylesheet">' . "\n" .
         get_post_meta($post->ID, 'bibsonomycsl_css', true) .
         '</style>' . "\n";
-        //return $css;
     }
 
-    public function bibsonomycsl_enquere_styles() {
+    public function bibsonomycsl_enqueue_scripts() {
 
-        wp_enqueue_style('Bibsonomy Bibliography Standard Style', '/wp-content/plugins/bibsonomy_csl/css/bibstyles.css', array(), false, 'screen');
+        wp_enqueue_style('bibsonomycsl', plugins_url('',__FILE__).'/css/bibsonomycsl.css');
+        wp_enqueue_script('bibsonomycsl', plugins_url('',__FILE__).'/js/bibsonomycsl.js');
+        wp_enqueue_script('tooltip', plugins_url('',__FILE__).'/js/tooltip.js');
+        
     }
 
 }
@@ -479,4 +677,3 @@ class BibsonomyCsl {
 $bibsonomy = new BibsonomyCsl();
 
 add_action('init', array(&$bibsonomy, 'activate'));
-?>
