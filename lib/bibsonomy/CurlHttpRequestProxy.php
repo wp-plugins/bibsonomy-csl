@@ -60,6 +60,7 @@ class CurlHttpRequestProxy extends CurlHttpRequest {
         $mime = MimeTypeMapper::getMimeType($this->url->getFileName());
         
         if ($this->url->getPreview() !== false) {
+            header("Cache-Control: no-transform,public,max-age=604800,s-maxage=604800");
             header("Content-Type: image/jpeg");
         } else {
             header("Content-Type: $mime");
