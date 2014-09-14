@@ -213,11 +213,14 @@ class BibsonomyCsl {
 
         $this->bibsonomyOptions = new BibsonomyOptions();
 
-
+        //activation
         register_activation_hook(__FILE__, array(&$this, 'activate'));
-
-        register_deactivation_hook(__FILE__, array(&$this, 'jal_uninstall'));
+        
+        //deactivation
         register_deactivation_hook(__FILE__, array(&$this, 'deactivate'));
+        
+        //uninstallation
+        register_uninstall_hook(__FILE__, array(&$this, 'jal_uninstall'));
     }
 
     /**
@@ -281,32 +284,30 @@ class BibsonomyCsl {
     public function jal_uninstall() {
         global $wpdb, $jal_db_version;
 
+        // Make sure that we are uninstalling
+        if ( !defined( 'WP_UNINSTALL_PLUGIN' ) ) {
+            exit();
+        }
+        
+        $option_name = 'bibsonomy_options';
+
+        if ( !is_multisite() )  {
+            delete_option( $option_name );
+        } else {
+            
+            $blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
+            $original_blog_id = get_current_blog_id();
+
+            foreach ( $blog_ids as $blog_id ) {
+                switch_to_blog( $blog_id );
+                delete_option( $option_name );     
+            }
+
+            switch_to_blog( $original_blog_id );
+        } 
         
         $table_name = $wpdb->prefix . "bibsonomy_csl_styles";
         $wpdb->query("DROP TABLE {$table_name}");
-        
-        
-        /*
-         * //if uninstall not called from WordPress exit
-if ( !defined( 'WP_UNINSTALL_PLUGIN' ) ) 
-    exit();
-
-$option_name = 'plugin_option_name';
-
-delete_option( $option_name );
-
-// For site options in multisite
-delete_site_option( $option_name );  
-
-//drop a custom db table
-global $wpdb;
-$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}mytable" );
-
-//note in multisite looping through blogs to delete options on each blog does not scale. You'll just have to leave them.
-         * 
-         * 
-         */
-        
     }
 
     public function jal_install_data() {
