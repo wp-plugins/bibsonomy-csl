@@ -298,4 +298,3 @@ add_action('wp_enqueue_scripts', function() {
     wp_enqueue_style('bibsonomycsl-tagcloud', plugins_url('',__FILE__).'/css/bibsonomycsl-tagcloud.css');
 });
 
-?>
