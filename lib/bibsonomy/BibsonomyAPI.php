@@ -87,7 +87,6 @@ class BibsonomyAPI {
                         $query = "SELECT xml_source FROM $table_name WHERE id='" . $args['stylesheet'] . "';";
 
                         $results = $wpdb->get_results($query);
-	                    print_r($results[0]);
                         $xmlSource = $results[0]->xml_source;
                     } else {
                         $xmlSource = $this->fetchStylesheet($args);
