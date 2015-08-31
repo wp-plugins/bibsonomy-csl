@@ -103,7 +103,10 @@ class CurlHttpRequest {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
         //Auth Basic?
-        if ($this->url->getAuthUser() && $this->url->getAuthPass()) {
+	    $authUser = $this->url->getAuthUser();
+	    $authPass = $this->url->getAuthPass();
+
+	    if ( !empty($authUser) && !empty($authPass) ) {
 
             curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
             curl_setopt($ch, CURLOPT_USERPWD, $this->url->getAuthUser() . ":" . $this->url->getAuthPass());

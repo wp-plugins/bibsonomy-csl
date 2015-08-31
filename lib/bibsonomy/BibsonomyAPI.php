@@ -21,7 +21,8 @@ require_once 'Url.php';
 require_once 'CurlHttpResponse.php';
 require_once 'CurlHttpRequest.php';
 require_once 'BibsonomyHelper.php';
-
+require_once __DIR__.'/../../vendor/autoload.php';
+use \AcademicPuma\CiteProc\CiteProc;
 /**
  * Description of BibsonomyAPI
  *
@@ -65,15 +66,19 @@ class BibsonomyAPI {
     /**
      *
      * @param array $args
+     *
+     * @return string
      */
     public function renderPublications($args) {
-        global $wpdb, $post;
+        global $wpdb, $post, $BIBSONOMY_OPTIONS;
 
         $publications = $this->fetchPublications($args);
         usort($publications, "self::cmpYear");
-                
+
+	    $xmlSource = "";
+
         if($args['stylesheet'] !== "url") {
-            $xmlSource = "";
+
             $table_name = $wpdb->prefix . "bibsonomy_csl_styles";
 
             try {
@@ -82,7 +87,7 @@ class BibsonomyAPI {
                         $query = "SELECT xml_source FROM $table_name WHERE id='" . $args['stylesheet'] . "';";
 
                         $results = $wpdb->get_results($query);
-
+	                    print_r($results[0]);
                         $xmlSource = $results[0]->xml_source;
                     } else {
                         $xmlSource = $this->fetchStylesheet($args);
@@ -99,9 +104,8 @@ class BibsonomyAPI {
             $xmlSource = $this->fetchStylesheet($args);
         }
         
-        $citeProc = new citeproc($xmlSource);
-
         $year = 0;
+        $ret = '';
 
         if ($args["groupyear"] == "grouping-anchors") {
             $ret .= $this->renderGroupingAnchors($publications);
@@ -109,10 +113,12 @@ class BibsonomyAPI {
 
         $ret .= '<ul class="' . BibsonomyCsl::PREFIX . 'publications">';
 
-        foreach ($publications as $key => $publication) {
-            global $BIBSONOMY_OPTIONS;
 
-            if ($args["groupyear"] == "grouping" || $args["groupyear"] == "grouping-anchors") {
+
+	    $citeProc = new \AcademicPuma\CiteProc\CiteProc($xmlSource);
+	    foreach ($publications as $key => $publication) {
+	        $ret .= '<li class="' . BibsonomyCsl::PREFIX . 'pubitem">';
+	        if ($args["groupyear"] == "grouping" || $args["groupyear"] == "grouping-anchors") {
                 if ($year != $publication->issued->literal) {
                     $year = $publication->issued->literal;
                     $ret .= "\n</ul>";
@@ -120,7 +126,7 @@ class BibsonomyAPI {
                     $ret .= "\n<ul class=\"" . BibsonomyCsl::PREFIX . "publications\">";
                 }
             }
-            $ret .= '<li class="' . BibsonomyCsl::PREFIX . 'pubitem">';
+
             //$ret .= ((isset($args['cssitem']) && $args['cssitem'] != "") ? 'style="' . $args['cssitem'] . '"' : "") . '>';
 
             if ($args['preview']) {
@@ -269,12 +275,7 @@ class BibsonomyAPI {
             throw new Exception("No style given!");
         }
 
-        $url = new BibsonomyCsl_Url($args['style']);
-
-        $req = new CurlHttpRequest($url);
-        $response = $req->send();
-
-        return $response->getBody();
+        return file_get_contents($args['style']);
     }
 
     public static function cmpYear($a, $b) {

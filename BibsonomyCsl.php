@@ -36,7 +36,6 @@ if (is_admin()) {
 require_once 'lib/bibsonomy/BibsonomyAPI.php';
 require_once 'lib/bibsonomy/DocumentUrl.php';
 require_once 'lib/bibsonomy/CurlHttpRequestProxy.php';
-require_once 'lib/citeproc-php/CiteProc.php';
 require_once 'BibsonomyOptions.php';
 
 

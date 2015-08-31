@@ -3,8 +3,8 @@ Contributors: seboettg
 Donate link: 
 Tags: bibsonomy, bibliography, publications, bookmark sharing, publication sharing, scientific publications
 Requires at least: 3.0.1
-Tested up to: 4.2
-Stable tag: 2.0.1
+Tested up to: 4.3
+Stable tag: 2.1.0
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,20 +13,20 @@ Creates publication lists based on the Citation Style Language (CSL) and Tag Clo
 == Description ==
 
 Plugin to create publication lists based on the Citation Style Language (CSL). Allows direct integration with the 
-social bookmarking and publication sharing system BibSonomy (http://www.bibsonomy.org) or PUMA (http://www.academic-puma.de). 
+social bookmarking and publication sharing systems BibSonomy (http://www.bibsonomy.org) or PUMA (http://www.academic-puma.de).
  
 BibSonomy is a social bookmarking and publication-sharing system. It integrates the features of bookmarking 
-systems with team-oriented publication management. BibSonomy offers its users the ability to store and organize 
-their bookmarks and publications online and it supports the integration of scientific communities through user groups as well as the collection, management, exchange, export and display of literature lists.
+systems with team-oriented publication management. PUMA offers the same features and additional means for science groups and universities.
+PUMA and BibSonomy provide to their users the ability to store and organize their bookmarks and publications online. Further features include
+the integration of scientific communities through user groups as well as the collection, management, exchange, export and display of literature lists.
 
-With this plugin you have the possibility to render a list of publications, which you can select by different content types like
-user and group. 
+With this plugin you have the possibility to render a list of publications, which you can filter by user or group.
 
-In addition you can filter the list, by using tags or free text search. So it's possible to render your own 
+In addition you can filter the list by using tags or free text search. So it's possible to render your own
 publications by selecting your own BibSonomy user and filtering the list with the tag 'myown'. It's also easily possible to integrate
 your BibSonomy Tag Cloud.
 
-To use this plugin, you need your BibSonomy user name and API key.
+To use this plugin, you need your PUMA/BibSonomy user name and API key.
 
 A extensive description about the plugin is available at 
 http://blog.bibsonomy.org/2012/12/feature-of-week-add-publication-lists.html
@@ -58,6 +58,9 @@ No questions yet.
 
 
 == Changelog ==
+
+= 2.1.0 =
+- Uses a new Version of CiteProc CSL. Have a look at http://bitbucket.org/seboettg/citeproc-csl
 
 = 2.0.0 =
 - Ability to offer download links of documents, show links to EndNote export, and render thumbnails of documents
