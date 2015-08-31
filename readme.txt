@@ -59,7 +59,7 @@ No questions yet.
 
 == Changelog ==
 
-= 2.1.0 =
+= 2.1.1 =
 - Uses a new Version of CiteProc CSL. Have a look at http://bitbucket.org/seboettg/citeproc-csl
 
 = 2.0.0 =
