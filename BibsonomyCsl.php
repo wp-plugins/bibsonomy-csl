@@ -4,9 +4,9 @@
   Plugin Name: BibSonomy/PUMA CSL - Publications
   Plugin URI: http://www.bibsonomy.org/help_en/Wordpress%20Plugin%20bibsonomy_csl
   Description: Plugin to create publication lists based on the Citation Style Language (CSL). Allows direct integration with the social bookmarking and publication sharing systems BibSonomy http://www.bibsonomy.org or PUMA.
-  Author: Sebastian Böttger, Andreas Hotho
+  Author: Sebastian Böttger
   Author URI: http://www.academic-puma.de
-  Version: 2.0.0
+  Version: 2.1.2
  */
 
 
