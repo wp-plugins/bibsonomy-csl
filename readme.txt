@@ -4,7 +4,7 @@ Donate link:
 Tags: bibsonomy, bibliography, publications, bookmark sharing, publication sharing, scientific publications
 Requires at least: 3.0.1
 Tested up to: 4.3
-Stable tag: 2.1.1
+Stable tag: 2.1.2
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -58,6 +58,9 @@ No questions yet.
 
 
 == Changelog ==
+
+= 2.1.2 =
+- Fixed missing urlencode for download and preview URLs
 
 = 2.1.1 =
 - Uses a new Version of CiteProc CSL. Have a look at http://bitbucket.org/seboettg/citeproc-csl

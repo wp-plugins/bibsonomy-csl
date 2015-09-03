@@ -6,7 +6,7 @@
   Description: Plugin to create publication lists based on the Citation Style Language (CSL). Allows direct integration with the social bookmarking and publication sharing systems BibSonomy http://www.bibsonomy.org or PUMA.
   Author: Sebastian Böttger
   Author URI: http://www.academic-puma.de
-  Version: 2.1.1
+  Version: 2.1.2
  */
 
 

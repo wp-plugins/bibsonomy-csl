@@ -3,9 +3,9 @@
   Plugin Name: BibSonomy/PUMA CSL - Publications & Tag Cloud Widget
   Plugin URI: http://www.bibsonomy.org/help_en/Wordpress%20Plugin%20bibsonomy_csl
   Description: Plugin to create tag clouds from BibSonomy or PUMA.
-  Author: Sebastian Böttger, Andreas Hotho
+  Author: Sebastian Böttger
   Author URI: http://www.academic-puma.de
-  Version: 2.1.1
+  Version: 2.1.2
  */
 
 /*
