@@ -111,9 +111,8 @@ class BibsonomyAPI {
 
         $ret .= '<ul class="' . BibsonomyCsl::PREFIX . 'publications">';
 
+		$citeProc = new \AcademicPuma\CiteProc\CiteProc($xmlSource);
 
-
-	    $citeProc = new \AcademicPuma\CiteProc\CiteProc($xmlSource);
 	    foreach ($publications as $key => $publication) {
 	        $ret .= '<li class="' . BibsonomyCsl::PREFIX . 'pubitem">';
 	        if ($args["groupyear"] == "grouping" || $args["groupyear"] == "grouping-anchors") {

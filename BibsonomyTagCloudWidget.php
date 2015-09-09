@@ -5,7 +5,7 @@
   Description: Plugin to create tag clouds from BibSonomy or PUMA.
   Author: Sebastian Böttger
   Author URI: http://www.academic-puma.de
-  Version: 2.1.2
+  Version: 2.1.3
  */
 
 /*
