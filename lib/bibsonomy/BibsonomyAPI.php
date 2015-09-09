@@ -22,7 +22,6 @@ require_once 'CurlHttpResponse.php';
 require_once 'CurlHttpRequest.php';
 require_once 'BibsonomyHelper.php';
 require_once __DIR__.'/../../vendor/autoload.php';
-use \AcademicPuma\CiteProc\CiteProc;
 /**
  * Description of BibsonomyAPI
  *
@@ -87,7 +86,6 @@ class BibsonomyAPI {
                         $query = "SELECT xml_source FROM $table_name WHERE id='" . $args['stylesheet'] . "';";
 
                         $results = $wpdb->get_results($query);
-	                    print_r($results[0]);
                         $xmlSource = $results[0]->xml_source;
                     } else {
                         $xmlSource = $this->fetchStylesheet($args);
@@ -113,9 +111,8 @@ class BibsonomyAPI {
 
         $ret .= '<ul class="' . BibsonomyCsl::PREFIX . 'publications">';
 
+		$citeProc = new \AcademicPuma\CiteProc\CiteProc($xmlSource);
 
-
-	    $citeProc = new \AcademicPuma\CiteProc\CiteProc($xmlSource);
 	    foreach ($publications as $key => $publication) {
 	        $ret .= '<li class="' . BibsonomyCsl::PREFIX . 'pubitem">';
 	        if ($args["groupyear"] == "grouping" || $args["groupyear"] == "grouping-anchors") {
@@ -135,7 +132,7 @@ class BibsonomyAPI {
                         'action' => 'preview',
                         'userName' => $publication->documents[0]->userName,
                         'intraHash' => substr($publication->id, 0, 32),
-                        'fileName' => $publication->documents[0]->fileName,
+                        'fileName' => urlencode($publication->documents[0]->fileName),
                         'size' => 'SMALL'
                             ), get_permalink($post->ID));
                     $ret .= '<div class="' . BibsonomyCsl::PREFIX . 'preview_border">';
@@ -143,7 +140,7 @@ class BibsonomyAPI {
                         'action' => 'preview',
                         'userName' => $publication->documents[0]->userName,
                         'intraHash' => substr($publication->id, 0, 32),
-                        'fileName' => $publication->documents[0]->fileName,
+                        'fileName' => urlencode($publication->documents[0]->fileName),
                         'size' => 'LARGE'
                             ), get_permalink($post->ID));
 
@@ -195,7 +192,7 @@ class BibsonomyAPI {
                         'action' => 'download',
                         'userName' => $publication->documents[0]->userName,
                         'intraHash' => substr($publication->id, 0, 32),
-                        'fileName' => $publication->documents[0]->fileName
+                        'fileName' => urlencode($publication->documents[0]->fileName)
                             ), get_permalink($post->ID));
 
                     $ret .= '<span class="' . BibsonomyCsl::PREFIX . 'download"><a href="' . $document_download_url . '">Download</a></span> ';
